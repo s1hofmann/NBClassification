@@ -28,7 +28,7 @@ class Preprocessor:
         return [[w for w in document if not w in stopwords.words('english')] for document in corpus]
 
     def process(self, corpus):
-        tagged_corpus = [pos_tag(word_tokenize(document)) for document in corpus]
-        self.remove_punctuation(tagged_corpus)
-        lemmatized_corpus = [[self.lemmatize(token, tag) for token, tag in document] for document in tagged_corpus]
+        # tagged_corpus = [pos_tag(word_tokenize(document)) for document in corpus]
+        self.remove_punctuation(corpus)
+        lemmatized_corpus = [[self.lemmatize(token, tag) for token, tag in document] for document in corpus]
         return self.remove_stopwords(lemmatized_corpus)

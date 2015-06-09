@@ -3,33 +3,70 @@ __author__ = 'Simon Hofmann'
 
 from nb_classifier import NaiveBayesClassifier as NBC
 from preprocessor import Preprocessor as Prep
+from nltk import corpus
 
 
 def main():
     nb = NBC()
     p = Prep()
 
+    fiction_size = len(corpus.brown.tagged_sents(categories='fiction'))
+    science_fiction_size = len(corpus.brown.tagged_sents(categories='science_fiction'))
+
+    # Indices for cross validation
+    fiction_training_idx = int((4/5)*fiction_size)
+    science_fiction_training_idx = int((4/5)*science_fiction_size)
+
+    # 3399 fiction Datensätze vs. 758 science_fiction Datensätze
+    print('Amount of fiction training data: ' + str(fiction_training_idx))
+    print('Amount of science-fiction training data: ' + str(science_fiction_training_idx))
+
+    input("Press Enter to continue...")
+
     # Training data
-    sports = ["The fans at Staples Center believed it was done too, and Houston Rockets guard Jason Terry could feel it as people in the crowd were yelling for the team in red to go home.",
-              "Tom Thibodeau says he expects to be coaching the Chicago Bulls next season despite a league-wide belief that he and the team's front office will decide to part ways.",
-              "Kyrie Irving was in the locker room getting his knee checked for additional injury. Kevin Love was back in Cleveland with his arm in a sling. Tristan Thompson was on the bench, his left shoulder wrapped in ice. LeBron James was walking gingerly around the floor, grasping his back after a blow caused a spasm."]
+    fiction_training_data = corpus.brown.tagged_sents(categories='fiction')[0:fiction_training_idx]
+    science_fiction_training_data = corpus.brown.tagged_sents(categories='science_fiction')[0:science_fiction_training_idx]
 
-    finance = ["A recovery in the world's largest economy is paving the way for a lift-off in U.S. interest rates, which many analysts expect to take place in September. With the three-month Singapore interbank offered rate, or SIBOR, closely linked to the U.S. Federal funds rate, that liftoff will likely pull the city-state's lending rates higher as well. The Sibor hit a 6-year high of above 1 percent in March and was at 0.8788 per cent on Thursday.",
-               "Dealmaking in the United States in 2015 has climbed 48 percent year-on-year to $565.6 billion, the highest level since 2007, following a string of multi-billion dollar acquisitions this week.",
-               "Worldwide M&A activity is up 30 percent so far this year compared to the same period in 2014, with $1.4 trillion worth of deals having been struck."]
+    # Validation data
+    fiction_validation_data = corpus.brown.tagged_sents(categories='fiction')[fiction_training_idx:]
+    science_fiction_validation_data = corpus.brown.tagged_sents(categories='science_fiction')[science_fiction_training_idx:]
 
-    documents = [p.process(sports), p.process(finance)]
-    nb.train(documents, ["Sports", "Finance"])
+    print('Preprocessing...')
+    documents = [p.process(fiction_training_data),
+                 p.process(science_fiction_training_data)]
+    labels = ["fiction", "science_fiction"]
 
-    # Test data
-    test_finance = "Danaher announced it would buy air and water-filter maker Pall in a $13.8 billion deal, pipeline operator Williams Cos said it would buy affiliate Williams Partners also for about $13.8 billion in stock and Verizon Communications said it would buy AOL in a $4.4 billion deal."
-    test_sports = "Following a breakout season that earned him his first NBA MVP trophy, Golden State Warriors point guard Stephen Curry is America's favorite NBA player, according to Public Policy Polling."
+    print('Training...')
+    nb.train(documents, labels)
 
-    print("Should be: Sports")
-    print("Is: " + nb.predict(test_sports))
-    print("---")
-    print("Should be: Finance")
-    print("Is: " + nb.predict(test_finance))
+    print('Evaluating...')
+    hits_fiction = 0
+    misses_fiction = 0
+    for item in fiction_validation_data:
+        if nb.predict(p.process([item])) == labels[0]:
+            hits_fiction += 1
+        else:
+            misses_fiction += 1
+
+    # Genauigkeit von 96,94% bei fiction
+    print('Accuracy: ' + str(hits_fiction/len(fiction_validation_data)))
+    print('Misses: ' + str(misses_fiction/len(fiction_validation_data)))
+
+    input("Press Enter to continue...")
+
+    hits_science_fiction = 0
+    misses_science_fiction = 0
+    for item in science_fiction_validation_data:
+        if nb.predict(p.process([item])) == labels[1]:
+            hits_science_fiction += 1
+        else:
+            misses_science_fiction += 1
+
+    # Gegen Genauigkeit von 7.89% bei science_fiction
+    print('Accuracy: ' + str(hits_science_fiction/len(science_fiction_validation_data)))
+    print('Misses: ' + str(misses_science_fiction/len(science_fiction_validation_data)))
+
+    print('Total accuracy: ' + str((hits_science_fiction+hits_fiction)/(len(fiction_validation_data)+len(science_fiction_validation_data))))
 
 if __name__ == "__main__":
     main()

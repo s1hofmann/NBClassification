@@ -49,12 +49,13 @@ class NaiveBayesClassifier:
                 count = total_text.count(token)
                 self.__conditional[docClass][token] = (count + 1) / (len(total_text) + len(self.__vocabulary))
 
-    def predict(self, document):
+    def predict(self, documents):
         for docClass in self.__classes:
             self.__classes[docClass] = log(self.__prior[docClass])
-            for token in document.split():
+            for document in documents:
                 try:
-                    self.__classes[docClass] += log(self.__conditional[docClass][token])
+                    for token in document:
+                        self.__classes[docClass] += log(self.__conditional[docClass][token])
                 except KeyError:
                     continue
 
