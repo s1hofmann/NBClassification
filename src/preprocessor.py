@@ -1,6 +1,5 @@
 __author__ = 'Simon Hofmann'
 
-from nltk import word_tokenize, pos_tag
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import stopwords
 from string import punctuation
@@ -23,7 +22,7 @@ class Preprocessor:
             for idx, token in enumerate(document):
                 if token[0] in punctuation:
                     del document[idx]
-                    
+
     def remove_stopwords(self, corpus):
         return [[w for w in document if not w in stopwords.words('english')] for document in corpus]
 

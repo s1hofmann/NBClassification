@@ -2,6 +2,7 @@ __author__ = 'Simon Hofmann'
 
 import unittest
 from preprocessor import Preprocessor
+from nltk import pos_tag, word_tokenize
 
 
 class PreprocessorTest(unittest.TestCase):
@@ -46,7 +47,8 @@ class PreprocessorTest(unittest.TestCase):
 
     def test_process(self):
         test_corpus = ['He ate all the sandwiches!', 'Every sandwich was eaten by him.']
-        self.assertEqual(self.__pp.process(test_corpus), [['He', 'eat', 'sandwich'],
+        tagged_corpus = [pos_tag(word_tokenize(document)) for document in test_corpus]
+        self.assertEqual(self.__pp.process(tagged_corpus), [['He', 'eat', 'sandwich'],
                                                           ['Every', 'sandwich', 'eat']])
 
 if __name__ == "__main__":

@@ -4,69 +4,56 @@ __author__ = 'Simon Hofmann'
 from nb_classifier import NaiveBayesClassifier as NBC
 from preprocessor import Preprocessor as Prep
 from nltk import corpus
+from evalutator import Evaluator
 
 
 def main():
-    nb = NBC()
     p = Prep()
 
-    fiction_size = len(corpus.brown.tagged_sents(categories='fiction'))
-    science_fiction_size = len(corpus.brown.tagged_sents(categories='science_fiction'))
-
-    # Indices for cross validation
-    fiction_training_idx = int((4/5)*fiction_size)
-    science_fiction_training_idx = int((4/5)*science_fiction_size)
-
-    # 3399 fiction Datensätze vs. 758 science_fiction Datensätze
-    print('Amount of fiction training data: ' + str(fiction_training_idx))
-    print('Amount of science-fiction training data: ' + str(science_fiction_training_idx))
-
-    input("Press Enter to continue...")
-
-    # Training data
-    fiction_training_data = corpus.brown.tagged_sents(categories='fiction')[0:fiction_training_idx]
-    science_fiction_training_data = corpus.brown.tagged_sents(categories='science_fiction')[0:science_fiction_training_idx]
-
-    # Validation data
-    fiction_validation_data = corpus.brown.tagged_sents(categories='fiction')[fiction_training_idx:]
-    science_fiction_validation_data = corpus.brown.tagged_sents(categories='science_fiction')[science_fiction_training_idx:]
+    # input("Press Enter to continue...")
 
     print('Preprocessing...')
-    documents = [p.process(fiction_training_data),
-                 p.process(science_fiction_training_data)]
-    labels = ["fiction", "science_fiction"]
 
-    print('Training...')
-    nb.train(documents, labels)
+    documents = [p.process(corpus.brown.tagged_sents(categories='adventure')),
+                 p.process(corpus.brown.tagged_sents(categories='news'))]
+    labels = ["fiction", "news"]
 
-    print('Evaluating...')
-    hits_fiction = 0
-    misses_fiction = 0
-    for item in fiction_validation_data:
-        if nb.predict(p.process([item])) == labels[0]:
-            hits_fiction += 1
-        else:
-            misses_fiction += 1
+    evaluator = Evaluator(documents, labels)
+    evaluator.k_fold(5)
 
-    # Genauigkeit von 96,94% bei fiction
-    print('Accuracy: ' + str(hits_fiction/len(fiction_validation_data)))
-    print('Misses: ' + str(misses_fiction/len(fiction_validation_data)))
-
-    input("Press Enter to continue...")
-
-    hits_science_fiction = 0
-    misses_science_fiction = 0
-    for item in science_fiction_validation_data:
-        if nb.predict(p.process([item])) == labels[1]:
-            hits_science_fiction += 1
-        else:
-            misses_science_fiction += 1
-
-    # Gegen Genauigkeit von 7.89% bei science_fiction
-    print('Accuracy: ' + str(hits_science_fiction/len(science_fiction_validation_data)))
-    print('Misses: ' + str(misses_science_fiction/len(science_fiction_validation_data)))
-
-    print('Total accuracy: ' + str((hits_science_fiction+hits_fiction)/(len(fiction_validation_data)+len(science_fiction_validation_data))))
+    # print('Training...')
+    # nb.train(documents, labels)
+    # eval.train(documents, labels)
+    # nb.info(9)
+    #
+    # input('Press Enter to continue...')
+    #
+    # print('Evaluating...')
+    #
+    # total_hits = 0
+    # total_misses = 0
+    # total_data = 0
+    #
+    # for idx, categorie in enumerate(labels):
+    #     hits = 0
+    #     misses = 0
+    #     total_data += len(validation_data[idx])
+    #     for item in validation_data[idx]:
+    #         print('Should be: ' + categorie)
+    #         result = nb.predict(p.process([item]))
+    #         print('Is: ' + result)
+    #         if result == categorie:
+    #             hits += 1
+    #             total_hits += 1
+    #         else:
+    #             misses += 1
+    #             total_misses += 1
+    #
+    #     print('Accuracy: ' + str(hits/len(validation_data[idx]) * 100) + '%')
+    #     print('Misses: ' + str(misses/len(validation_data[idx]) * 100) + '%')
+    #     input("Press Enter to continue...")
+    #
+    # print('Total accuracy: ' + str((total_hits/total_data) * 100) + '%')
 
 if __name__ == "__main__":
     main()

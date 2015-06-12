@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 __author__ = 'Simon Hofmann'
 
 from math import log
@@ -9,6 +11,7 @@ class NaiveBayesClassifier:
     __classes = None
     __vocabulary = None
     __total_docs = 0
+    __trained = False
 
     def __init__(self):
         print("Naive bayes classification")
@@ -31,23 +34,39 @@ class NaiveBayesClassifier:
 
     def train(self, documents, label):
         assert (len(documents) == len(label))
+        # Build vocabulary
         for docs in documents:
             self.__total_docs += len(docs)
             for doc in docs:
                 [self.__vocabulary.add(t) for t in doc]
 
+        # Used to store no. of appearance
+        cnt = {}
+
         for idx, docClass in enumerate(label):
             self.__classes[docClass] = 0
             self.__prior[docClass] = len(documents[idx]) / self.__total_docs
             self.__conditional[docClass] = {}
-            # Concatenate all documents of current class
-            total_text = []
+            total_text = 0
+            cnt[idx] = {}
             for docs in documents[idx]:
-                [total_text.append(t) for t in docs]
+                for t in docs:
+                    total_text += 1
+                    try:
+                        cnt[idx][t] += 1
+                    except KeyError:
+                        cnt[idx][t] = 1
 
             for token in self.__vocabulary:
-                count = total_text.count(token)
-                self.__conditional[docClass][token] = (count + 1) / (len(total_text) + len(self.__vocabulary))
+                count = 0
+                try:
+                    count = cnt[idx][token]
+                except KeyError:
+                    pass
+
+                self.__conditional[docClass][token] = (count + 1) / (total_text + len(self.__vocabulary))
+
+        self.__trained = True
 
     def predict(self, documents):
         for docClass in self.__classes:
@@ -59,5 +78,24 @@ class NaiveBayesClassifier:
                 except KeyError:
                     continue
 
-        print(self.__classes)
+        # print(self.__classes)
         return max(self.__classes, key=lambda i: self.__classes[i])
+
+    def info(self, n):
+        """
+        Prints an overview of n most important vocabulary words for each class.
+        """
+        if not self.__trained:
+            print('This feature is only available after the classifier has been trained!')
+            return
+
+        importance_map = {}
+
+        for doc_class in self.__classes:
+            importance_map[doc_class] = sorted(self.__conditional[doc_class].items(), key=itemgetter(1), reverse=True)
+
+        for entry in importance_map.keys():
+            print('The %d most important tokens for document class: %s' % (n, entry))
+            print('*****')
+            for item in importance_map[entry][:n]:
+                print('Token: %s \t| Importance: %d' % (item[0], item[1]))
