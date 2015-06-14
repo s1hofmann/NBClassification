@@ -1,0 +1,80 @@
+\section{Naive Bayes-Klassifikatoren}\label{sec:theory}
+    Naive Bayes-Klassifikatoren stammen aus dem Bereich des überwachten Lernens. 
+
+    Dabei werden (vom Menschen) aufbereitete Trainingsdaten an einen Algorithmus übergeben, der anhand dieser markierten Daten eine Entscheidungsfunktion $\gamma$~``lernt'', die ein Element $X$ einer Klasse $c$ aus einer Menge von Klassen $K$ zuweist~\cite{IIR}.
+
+    Um die Entscheidungsfunktion zu evaluieren wird ein ebenfalls bekannter Satz von Testdaten verwendet, mit dessen Hilfe sich die Genauigkeit der getroffenen Entscheidungen feststellen lässt.
+    Im Fall des naiven Bayes-Klassifikators beruhen die getroffenen Entscheidungen auf Statistik und wurden anhand des Bayes-Theorems hergeleitet. 
+
+    \subsection{Vokabular und Merkmalsvektoren}\label{sec:vocab}
+        Bevor ein Klassifikator anhand von Traingsdaten trainiert werden kann, ist es notwendig, klassifizierbare Merkmale aus den Daten zu extrahieren. 
+
+        Dazu wird zu Beginn des Trainings ein Vokabular gebildet, das die in den Traingsdaten vorkommenden Worte enthält. 
+        Dabei wird jedes Wort nur einmal hinzugefügt. 
+
+        Anhand eines Vokabulars der Länge $n$ kann nun ein Dokument als $n$-dimensionaler Merkmalsvektor $\mathbf{x}$ dargestellt werden, bei dem jede Dimension $i$ die Häufigkeit des Auftretens des jeweiligen Wortes an Stelle $i$ im Vokabular enthält.
+
+
+    \subsection{Textklassifikation mittels naivem Bayes-Klassifikator}
+    Die Klassifikation von Textdokumenten hat zum Ziel, die Dokumentenklasse $c_{m}$ aus einer Menge von Dokumentenklassen $K$ zu finden, der ein Dokument $d$ mit Merkmalsvektor $\mathbf{x} = (x_{1},\dots,x_{n})$ mit größter Wahrscheinlichkeit angehört~\cite{IIR}. Anders ausgedrückt möchte man die Dokumentenklasse $c_{m}$ finden, für die die Wahrscheinlichkeit $\hat{P}(c|\mathbf{x})$ für einen gegebenen Merkmalsvektor $\mathbf{x}$~maximiert wird.
+
+        \begin{equation}
+            c_{m} = \argmax_{c \in K} \hat{P}(c|\mathbf{x})
+            \label{eq:argmax}
+        \end{equation}
+
+        Dieser Zusammenhang lässt sich mittels des Satzes von Bayes folgendermaßen formulieren:
+
+        \begin{equation}
+            c_{m} = \argmax_{c \in K} \frac{\hat{P}(c)\hat{P}(\mathbf{x}|c)}{\hat{P}(\mathbf{x})}
+            \label{eq:class_bayes}
+        \end{equation}
+
+        Die Dokumentenklasse $c_{m}$ aus den beiden Gleichungen~\ref{eq:argmax} bzw.~\ref{eq:class_bayes} stellt also eine Maximum-a-posteriori (MAP) Schätzung dar~\cite{IIR}. 
+
+        Die dafür nötigen Wahrscheinlichkeitsverteilungen werden anhand einer Menge von Trainingsdaten $D$ mit $n$ Dokumenten $d \in D$ geschätzt, weshalb die Wahrscheinlichkeiten, wie bei Schätzwerten üblich, mit einem \^~gekennzeichnet werden.
+
+        Der Prior $\hat{P}(c)$ wird mittels des Quotienten der Anzahl an Trainingsdokumenten $d$ in Dokumentenklasse $c$ und der gesamten Anzahl an Dokumenten abgeschätzt.
+
+        \begin{equation}
+            \hat{P}(c) = \frac{\sum_{d \in c}1}{\sum_{d^{'} \in D}1}
+            \label{eq:a_priori_c}
+        \end{equation}
+
+        Die A-priori Wahrscheinlichkeit $\hat{P}(\mathbf{x})$ beschreibt die Wahrscheinlichkeit des Vorkommens eines Merkmalsvektors $\mathbf{x}$.
+
+        Da $\hat{P}(\mathbf{x})$ für alle Dokumentenklassen denselben Wert annimmt, wird er bei der Bestimmung von $c_{m}$ meist vernachlässigt~\cite{nbindependence,IIR} und Gleichung~\ref{eq:class_bayes} vereinfacht sich zu:
+
+        \begin{equation}
+            c_{m} = \argmax_{c \in K}\hat{P}(c)\hat{P}(\mathbf{x}|c)
+            \label{eq:class_bayes_2}
+        \end{equation}
+
+        Um den letzten Bestandteil von Gleichung~\ref{eq:class_bayes} zu ermitteln, trifft der naive Bayes-Klassifikator eine vereinfachende Annahme.
+
+    \subsection{Naivität des Bayes-Klassifikators}
+    Die bedingte Wahrscheinlichkeit $\hat{P}(\mathbf{x}|c)$ sagt aus, wie groß die Wahrscheinlichkeit ist, dass der Merkmalsvektor $\mathbf{x}$ in Dokumentenklasse $c$ enthalten ist.
+
+    Um diesen Wahrscheinlichkeitswert zu ermitteln trifft der Klassifikator die Annahme, dass die einzelnen Elemente des Merkmalsvektors stochastisch unabhängig voneinander sind. Dadurch wird angenommen, dass das Vorkommen eines Merkmals $x_{i} \in \mathbf{x}$ keinen Einfluss auf das Vorkommen der restlichen Elemente von $\mathbf{x}$ hat~\cite{datamining, murphy} und $\hat{P}(\mathbf{x}|c)$ vereinfacht sich zu:
+
+        \begin{equation}
+            \hat{P}(\mathbf{x}|c) = \prod_{i=1}^{n} \hat{P}(x_{i}|c)
+            \label{eq:cond_prod}
+        \end{equation}
+
+        Mit diesem Ergebnis lässt sich Gleichung~\ref{eq:class_bayes_2} weiter umformen zu:
+
+        \begin{equation}
+            c_{m} = \argmax_{c \in K}\hat{P}(c)\prod_{i=1}^{n}\hat{P}(x_{i}|c)
+            \label{eq:class_bayes_3}
+        \end{equation}
+
+        Die Wahrscheinlichkeit $\hat{P}(x_{i}|c)$ ergibt sich letztendlich aus dem Quotienten der Häufigkeit von Merkmal $x_{i}$ in den Merkmalsvektoren $\mathbf{x}$ der Dokumente $d$ in Klasse $c$ und der Gesamtanzahl an Merkmalen $w$ in Klasse $c$~\cite{IIR}.
+
+        \begin{equation}
+            \hat{P}(x_{i}|c) = \frac{\sum_{\mathbf{x} \in c}\sum_{x_{i} \in \mathbf{x}}1}{\sum_{\mathbf{x} \in c}\sum_{w \in \mathbf{x}}1}
+            \label{eq:cond_prob_xi}
+        \end{equation}
+
+        Die Annahme der stochastischen Unabhängigkeit wird oft als naiv bezeichnet, da sie in der Realität, vor allem bei natürlichen Sprachen, nicht eingehalten wird~\cite{datamining}. 
+        Doch auch wenn diese Annahme oft verletzt wird, liefert der naive Bayes-Klassifikator gute Ergebnisse~\cite{nbindependence,datamining,murphy}.

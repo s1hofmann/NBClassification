@@ -1,0 +1,237 @@
+%	Vorlage FAU
+
+
+
+\documentclass[11pt,a4paper]{scrartcl}
+
+\usepackage[utf8]{inputenc}				%Sonderzeichen als utf8@gedit und texmaker. sonst: latin1
+\usepackage[T1]{fontenc}				%Europ. Zeichensatzkodierung, u.a. Umlaute
+\usepackage{graphicx}					%Graphiken einbinden
+\usepackage{lmodern}					%Verbesserte Schriftqualität
+\usepackage[ngerman]{babel}				%neue deutsche Rechtschreibung
+\usepackage{wrapfig}					%Graphiken umfließen		
+\usepackage{multirow}					%Spezielle Tabellenfunktionen
+\usepackage{amsmath}                    %Mathematische Bibliothek
+\usepackage{setspace}
+\usepackage[hmargin=3cm,vmargin=3.5cm]{geometry}
+
+%Farbfunktionen
+\usepackage{xcolor}							%Package
+
+\definecolor{ltgray}{rgb}{0.95, 0.95, 0.95}	%Definition gray (Quellcode Hintergrund)
+\definecolor{ltblue}{rgb}{0, 0.1, 1}		%Definition blue (Quellcode Identifier)
+\definecolor{ltdred}{rgb}{0.8, 0.0, 0.25}   %Definition dunkel rot (Quellcode Strings)
+\definecolor{ltgreen}{rgb}{0, 0.6, 0}		%Definition green (Quellcode def. Konstanten)
+\definecolor{ltgray2}{rgb}{0.1, 0.1, 0.1}	%Definition dunkelgrau (Quellcode Kommentare)
+\definecolor{ltpurple}{rgb}{0.5, 0, 0.7}	%Definition lila 
+
+%Hyperlink Formatierung				
+\usepackage[colorlinks=false,				%Text nicht farbig
+			urlbordercolor={0 0 1},			%URLs blau
+			linkbordercolor={1 1 1},		%interne Links weiß 
+			pdfborderstyle={/S/U/W 1}]		%Links unterstrichen
+			{hyperref}					
+
+%Formatierung von Quellcode
+\usepackage{listings}								%Package
+
+\lstset{											%Befehl zum Parameter setzen
+language=python,									%Visual(default) C++							
+basicstyle=\small\ttfamily,							%Listing small
+backgroundcolor=\color{ltgray}, 					%Hintergrundfarbe Hellgrau							
+keywordstyle=\bfseries,								%Keywords fettgedruckt
+identifierstyle=\color{ltblue},						%Identifier blau							
+commentstyle=\color{ltgray2},						%Kommentare 
+stringstyle=\itshape\color{ltdred},					%Strings dunkelrot
+showstringspaces=false,								%keine speziellen String spaces
+numbers=left,										%Zeilennummerierung links
+numbersep=15pt,										%Abstand zwischen Zeilennummern und Quellcode
+xleftmargin=30pt,									%Abstand Zeilennummern zu Rand
+emph={LCD_LINE1, LCD_LINE2, LCD_LINE3, LCD_LINE4, 	%Definition von Konstanten
+LCD_LINE5, LCD_LINE6, LCD_LINE7, LCD_LINE8, 
+OUT_A, OUT_B, OUT_C, OUT_AB, OUT_AC, OUT_BC, 
+S1, S2, S3, S4, IN_1, IN_2, IN_3, IN_4},
+emphstyle=\color{ltgreen},							%Konstanten grün
+literate=											%ermöglicht Umlaute in listings
+{Ö}{{\"O}}1
+{Ä}{{\"A}}1
+{Ü}{{\"U}}1
+{ß}{{\ss}}2
+{ü}{{\"u}}1
+{ä}{{\"a}}1
+{ö}{{\"o}}1
+} 						
+
+
+% ------ Formatierung Kopf- und Fußzeile
+\usepackage{scrpage2}							%Package
+
+\pagestyle{scrheadings}
+\clearscrheadings
+\clearscrplain
+
+\lohead{Seminararbeit Textmining}
+\cohead{}
+\rohead{FAU Erlangen}
+\lofoot{}
+\cofoot{}
+\rofoot{\pagemark}
+\setheadsepline{0pt} 							%Keine Linie für Kopfzeile
+\setfootsepline{0pt} 							%Keine Linie für Fußzeile
+%--------------------------------
+
+
+
+% --------- Formatierung Titelseite --------- %
+\newcommand{\Titelseite}{
+
+\begin{titlepage} 
+
+\pagestyle{empty}
+
+%Kopf
+\begin{minipage}[t]{6cm}
+\vspace{0pt}	
+\Kurs 															%Kursname
+\end{minipage}
+\hfill
+\begin{minipage}[t]{4cm}
+\vspace{-20pt}							
+\includegraphics[scale=0.20]{images/logo.png} 				%rechtsbündiges Logo
+\end{minipage}														
+	
+	
+%Mitte
+\begin{center}
+
+\vspace{3cm}
+\begin{doublespace}
+\textbf{\Huge \Titel} \\[2.5cm]									%Titel
+\end{doublespace}
+
+\begin{large}
+
+Autor: \Autor \\[0.5cm]                                                %Autor
+Matrikelnummer: 21889343 \\[1cm]
+\Datum \\[1.5cm]												%Datum
+%Version: \Version \\[1cm]										%Version
+letzte Aktualisierung: \today \\[2cm]							%Aktualisierung
+
+
+%Fuß
+Friedrich-Alexander-Universität Erlangen-Nürnberg\\
+Department Informatik
+
+\end{large}
+
+\end{center}				
+
+\thispagestyle{empty}											%unterdrückt Seitennummer
+
+\end{titlepage}
+
+}
+
+% ---------------------------------------- %
+
+
+
+% -------- Individuelle Anpassung -------- %
+
+%Kurs
+\newcommand{\Kurs}{Seminar Textmining}
+%Titel
+\newcommand{\Titel}{Klassifikation von Dokumenten nach Themen}
+%Autor: Professoren, Studentenn, etc				
+\newcommand{\Autor}{Simon Hofmann}
+%Datum
+\newcommand{\Datum}{14.06.2015}		
+%Version
+%\newcommand{\Version}{V1.0}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% -------- Anmerkung zum Einfügen von Graphiken ----------- % 
+
+
+% Syntax: 
+% \includegraphics[Optionen]{Pfad/Dateiname}
+
+%	 Als Optionen sind folgende Formatierungen verfügbar:
+
+% 		angle - Bestimmt den Drehwinkel um einen Referenzpunkt für die Grafik. Positive Werte drehen die Grafik 
+% 				gegen den  Uhrzeigersinn, negative mit ihm. 
+
+% 		draft - Ist draft gesetzt, wird nur ein Platzhalter der Grafik angezeigt. Beschleunigt den Übersetzungsvorgang 
+% 				des Dokuments erheblich. Oftmals kann draft auch in den Dokumentoptionen angegeben werden. 
+
+% 		scale - Skaliert die Grafik anhand eines Skalierungsfaktors. 
+
+% 		height - Skaliert die Grafik auf die angegebene Höhe. Die Angabe der Größe muss in einer LaTeX-spezifischen 	%				 Einheit  erfolgen. 
+
+% 		width - Skaliert die Grafik auf die angegebene Breite. Die Angabe der Größe muss in einer LaTeX-spezifischen 	%				Einheit erfolgen. 
+	
+
+
+% Um die Platzierung der Grafik Latex zu überlassen muss sie in eine figure-Umgebung eingebunden werden:
+
+%		\begin{figure}[Parameter]
+%		\includegraphics{Dateiname.eps}
+%		\caption{Titel der Grafik}				Beschriftung der Grafik
+%		\label{labelname}						Falls die Grafik intern verlinkt werden soll
+%		\end{figure}
+
+%	Als Parameter sind verfügbar:
+
+%    h (here): Platziere die Grafik möglichst dort, wo der Befehl zur Einbindung steht.
+%    t (top): Platziere die Grafik möglichst am Anfang einer Seite.
+%    b (bottom): Platziere die Grafik möglichst am Ende einer Seite.
+%    p (float page): Platziere die Grafik möglichst auf einer Seite, die nur "floating"-Objekte enthält.
+
+% Beispiel:
+
+%	\begin{figure}[htbp]
+%		\centering
+%			\includegraphics[scale=0.3]{images/Robo.jpg}
+%			\label{fig:Roboter}
+%			\caption{Roboter}		
+%	\end{figure}
+
+% -------------------------------------------------------------------- %
+
+% ----- Quellcode einbinden ---------%
+
+%	Um Latex die Formatierung von Quellcode zu ermöglichen muss der Code einfach in die folgenden Anweisungen  
+%   eingebunden werden
+
+%	\begin{lstlisting}
+%	<Quellcode>
+%	\end{lstlisting}
+
+
+%Beginn Dokument
+\begin{document}
+							
+\Titelseite									%erstellt Titelseite
+
+%Inhaltsverzeichnis
+\thispagestyle{empty}
+\tableofcontents
+
+\newpage
+\setcounter{page}{1}						%Nach Titelseite beginnt das Dokument mit Seite 1
+\setcounter{section}{0}
+
+%Hier .tex file importieren
+\input{intro}
+\input{bayesian_statistics}
+\input{naive_bayes}
+\input{implementation}
+\input{conclusion}
+\newpage
+\input{literatur}
+
+% ---- Beim Erstellen der .tex files in den Editoroptionen UTF-8 als Zeichenkodierung verwenden
+
+\end{document}

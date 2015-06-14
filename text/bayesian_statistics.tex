@@ -1,0 +1,52 @@
+\section{Bayessche Statistik}\label{sec:statistics}
+    In diesem Kapitel sollen Grundbegriffe der Bayesschen Statistik eingeführt werden, welche in dieser Arbeit Verwendung finden. 
+    Hierbei handelt es sich keineswegs um eine vollständige Einführung in die Bayessche Statistik, vielmehr werden die für diese Arbeit wichtigsten Aspekte zusammengefasst.
+    Der Inhalt des Kapitels stützt sich dabei auf~\cite{bw_statistik}.
+    
+    \subsection{Wahrscheinlichkeitsverteilung}
+        Existiert eine Abbildung $P$, welche einem Ereignis $A$ aus einer Ereignismenge $\Omega$ eine Zahl $P(A)$ zuweist, so spricht man von einer Wahrscheinlichkeitsverteilung, sofern die so genannten Kolmogorov-Axiome gelten:
+        \begin{enumerate}
+            \item $0 \le P(A) \le 1$
+            \item $P(\Omega) = 1$
+            \item $P(A_{1} \cup A_{2} \cup \dots \cup A_{n}) = \sum_{i=1}^{n}P(A_{i})$, wenn $A_{1}, \dots, A_{n}$ disjunkt.
+        \end{enumerate}
+
+    \subsection{Bedingte Wahrscheinlichkeit}
+        Als bedingte Wahrscheinlichkeit $P(X|Y)$~wird die Wahrscheinlichkeit bezeichnet, dass Bedingung $X$ erfüllt ist, gegeben dem Fall, dass eine Bedingung $Y$ ebenfalls erfüllt ist.
+
+        \begin{equation}
+            P(X|Y) = \frac{P(X \cap Y)}{P(Y)}
+            \label{eq:cond}
+        \end{equation}
+
+        \begin{equation}
+            \Leftrightarrow P(X \cap Y) = P(X|Y)P(Y)
+            \label{eq:cap}
+        \end{equation}
+
+    \subsection{Stochastische Unabhängigkeit}
+        Gelten zwei Ereignisse $X$ und $Y$ als stochastisch unabhängig, so haben sie keinen Einfluss aufeinander.
+        Das Eintreten von Ereignis $Y$ hat somit keinerlei Auswirkung auf die Wahrscheinlichkeit des Eintretens von Ereignis $X$.
+
+        Es gilt damit:
+
+        \begin{equation}
+            P(X|Y) = P(X) \Leftrightarrow P(Y|X) = P(Y)
+            \label{eq:independence}
+        \end{equation}
+
+    \subsection{Satz von Bayes}
+        Um aus einer gegebenen bedingten Wahrscheinlichkeitsverteilung $P(X|Y)$ und einer ebenfalls bekannten Wahrscheinlichkeit $P(Y)$ die bedingte Wahrscheinlichkeit $P(Y|X)$ zu berechnen, findet der Satz von Bayes Anwendung. 
+        Ausgehend von Gleichungen~\ref{eq:cond} und~\ref{eq:cap} lässt sich folgender Zusammenhang feststellen:
+
+        \begin{equation}
+            P(Y|X) = \frac{P(Y \cap X)}{P(X)}
+            \label{eq:bayes_1}
+        \end{equation}
+
+        Mit $P(Y \cap X) = P(X|Y)P(Y)$ ergibt sich daraus Gleichung~\ref{eq:bayes_2}, welche als Satz von Bayes bezeichnet wird:
+
+        \begin{equation}
+            P(Y|X) = \frac{P(X|Y)P(Y)}{P(X)}
+            \label{eq:bayes_2}
+        \end{equation}
