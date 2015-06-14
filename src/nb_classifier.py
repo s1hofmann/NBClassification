@@ -14,7 +14,7 @@ class NaiveBayesClassifier:
     __trained = False
 
     def __init__(self):
-        print("Naive bayes classification")
+        print("Naive Bayes classification")
         self.__prior = {}
         self.__classes = {}
         self.__conditional = {}
@@ -33,6 +33,9 @@ class NaiveBayesClassifier:
         return self.__prior
 
     def train(self, documents, label):
+        """
+        Trains a decision function for classification.
+        """
         assert (len(documents) == len(label))
         # Build vocabulary
         for docs in documents:
@@ -40,6 +43,7 @@ class NaiveBayesClassifier:
             for doc in docs:
                 [self.__vocabulary.add(t) for t in doc]
 
+        print('Vocabulary size: ' + str(len(self.__vocabulary)))
         # Used to store no. of appearance
         cnt = {}
 
@@ -49,14 +53,17 @@ class NaiveBayesClassifier:
             self.__conditional[docClass] = {}
             total_text = 0
             cnt[idx] = {}
+            # Build tf value for document class idx
             for docs in documents[idx]:
                 for t in docs:
                     total_text += 1
-                    try:
-                        cnt[idx][t] += 1
-                    except KeyError:
-                        cnt[idx][t] = 1
+                    if t in self.__vocabulary:
+                        try:
+                            cnt[idx][t] += 1
+                        except KeyError:
+                            cnt[idx][t] = 1
 
+            # Build feature vector
             for token in self.__vocabulary:
                 count = 0
                 try:
@@ -69,6 +76,13 @@ class NaiveBayesClassifier:
         self.__trained = True
 
     def predict(self, documents):
+        """
+        Classifies a documents using the trained model.
+        """
+        if not self.__trained:
+            print("Classifier not trained yet, classification not possible!")
+            return None
+
         for docClass in self.__classes:
             self.__classes[docClass] = log(self.__prior[docClass])
             for document in documents:
@@ -98,4 +112,4 @@ class NaiveBayesClassifier:
             print('The %d most important tokens for document class: %s' % (n, entry))
             print('*****')
             for item in importance_map[entry][:n]:
-                print('Token: %s \t| Importance: %d' % (item[0], item[1]))
+                print('Token: ' + item[0] + '\t\t\t\t| Importance: ' + str(item[1]) + ' %')

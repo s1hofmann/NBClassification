@@ -13,7 +13,11 @@ class PreprocessorTest(unittest.TestCase):
         test_tag = 'VBN'
         self.assertEqual(self.__pp.lemmatize(test_token, test_tag), 'eat')
 
-    def test_remove_punctuation(self):
+    def test_remove_stopwords(self):
+        test = [["i", "am", "happy", "when", "she", "is"]]
+        self.assertEqual(self.__pp.remove_stopwords(test), [['happy']])
+
+    def test_process(self):
         test_input = [[('He', 'PRP'),
                        ('ate', 'VBP'),
                        ('all', 'DT'),
@@ -28,28 +32,13 @@ class PreprocessorTest(unittest.TestCase):
                        ('him', 'PRP'),
                        ('.', '.')]]
 
-        self.__pp.remove_punctuation(test_input)
-        self.assertEqual(test_input, [[('He', 'PRP'),
-                                       ('ate', 'VBP'),
-                                       ('all', 'DT'),
-                                       ('the', 'DT'),
-                                       ('sandwiches', 'NNS')],
-                                      [('Every', 'DT'),
-                                       ('sandwich', 'NN'),
-                                       ('was', 'VBD'),
-                                       ('eaten', 'VBN'),
-                                       ('by', 'IN'),
-                                       ('him', 'PRP')]])
-
-    def test_remove_stopwords(self):
-        test = [["i", "am", "happy", "when", "she", "is"]]
-        self.assertEqual(self.__pp.remove_stopwords(test), [['happy']])
-
-    def test_process(self):
         test_corpus = ['He ate all the sandwiches!', 'Every sandwich was eaten by him.']
+
         tagged_corpus = [pos_tag(word_tokenize(document)) for document in test_corpus]
-        self.assertEqual(self.__pp.process(tagged_corpus), [['He', 'eat', 'sandwich'],
-                                                          ['Every', 'sandwich', 'eat']])
+        self.assertEqual(self.__pp.process(tagged_corpus), [['eat', 'sandwich'],
+                                                            ['every', 'sandwich', 'eat']])
+        self.assertEqual(self.__pp.process(test_input), [['eat', 'sandwich'],
+                                                         ['every', 'sandwich', 'eat']])
 
 if __name__ == "__main__":
     unittest.main()

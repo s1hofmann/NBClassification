@@ -18,7 +18,7 @@ class NaiveBayesTest(unittest.TestCase):
     def test_prediction(self):
         test = "do you know the chinese flag?"
         self.assertEqual(self.__nb.predict(test), "China")
-        self.assertEqual(self.__nb.classes, {'China': -1.3862943611198908, 'Japan': -3.465735902799726})
+        self.assertEqual(self.__nb.classes, {'China': -0.2876820724517809, 'Japan': -1.3862943611198906})
 
 if __name__ == "__main__":
     unittest.main()

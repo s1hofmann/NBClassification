@@ -1,53 +1,62 @@
 __author__ = 'Simon Hofmann'
 
 from nb_classifier import NaiveBayesClassifier as NBC
+from preprocessor import Preprocessor as Prep
 
 class Evaluator:
-    __data = None
+    __data = []
     __label = None
     __nb = None
+    __prep = None
     __total_data = []
     __total_labels = []
+    __verbose = False
+    __level = 0
 
-    def __init__(self, data, label):
-        self.__data = data
+    def __init__(self, data, label, verbose=False, verbosity_level = 5):
+        print('Preprocessing data...')
+        self.__prep = Prep()
+        for item in data:
+            self.__data.append(self.__prep.process(item))
         self.__label = label
         self.__precision = []
+        self.__verbose = verbose
+        self.__level = verbosity_level
 
     def k_fold(self, k):
         assert k > 1
-        total_length = 0
-        for doc in self.__data:
-            total_length += len(doc)
-        subset_size = int(total_length/k)
+        print('Starting ' + str(k) + '-fold cross-validation.')
+        input('Press Enter to continue...')
         for run in range(0, k):
             print('Run ' + str(run+1))
             nb = NBC()
             testing_data = []
-            testing_labels = []
             training_data = []
-            training_labels = []
             for idx, d in enumerate(self.__data):
-                testing_labels.append(self.__label[idx])
-                training_labels.append(self.__label[idx])
+                subset_size = int(len(d)/k)
                 testing_data.append(d[run*subset_size:(run+1)*subset_size])
                 training_data.append(d[:run*subset_size] + d[(run+1)*subset_size:])
 
-            nb.train(training_data, training_labels)
+            nb.train(training_data, self.__label)
 
-            for idx, item in enumerate(testing_labels):
-                hits = 0
-                misses = 0
+            hits = 0
+            misses = 0
+            for idx, item in enumerate(self.__label):
                 for doc in testing_data[idx]:
                     if nb.predict(doc) == item:
                         hits += 1
                     else:
                         misses += 1
-                if len(testing_data[idx]) > 0:
-                    self.__precision.append((hits/len(testing_data[idx]), misses/len(testing_data[idx])))
 
-            nb.info(10)
-            input('Press Enter to continue...')
+            total_length = 0
+            for item in testing_data:
+                total_length += len(item)
+
+            self.__precision.append((hits/total_length, misses/total_length))
+
+            if self.__verbose:
+                nb.info(self.__level)
+                input('Press Enter to continue...')
 
         total = 0
         for item in self.__precision:
